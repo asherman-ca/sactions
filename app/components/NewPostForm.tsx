@@ -1,8 +1,6 @@
 import { prisma } from '@/prisma/Prisma'
-import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
 
-const NewPostForm = async () => {
+const NewPostForm = ({ aftersave }: { aftersave: any }) => {
 	const handleSubmit = async (e: any) => {
 		'use server'
 		const { title, content } = Object.fromEntries(e)
@@ -12,33 +10,38 @@ const NewPostForm = async () => {
 				content: content,
 			},
 		})
-		revalidatePath('/')
+		await aftersave(post)
 	}
 
 	return (
-		<div className='p-4'>
-			<form action={handleSubmit}>
-				<div>
-					<input
-						type='text'
-						className='w-full'
-						placeholder='Title'
-						name='title'
-						required
-					/>
-				</div>
-				<div>
-					<input
-						type='text'
-						className='w-full'
-						placeholder='Content'
-						name='content'
-						required
-					/>
-				</div>
-				<button type='submit'>Create post</button>
-			</form>
-		</div>
+		<form action={handleSubmit} className='w-full mt-2 space-y-4'>
+			<div>
+				<input
+					type='text'
+					className='w-full p-1 outline-none border border-gray-200'
+					placeholder='Title'
+					name='title'
+					required
+				/>
+			</div>
+			<div>
+				<input
+					type='text'
+					className='w-full p-1 outline-none border border-gray-200'
+					placeholder='Content'
+					name='content'
+					required
+				/>
+			</div>
+			<div className='text-left'>
+				<button
+					type='submit'
+					className='font-medium bg-sky-500 text-white px-3 py-1'
+				>
+					Create post
+				</button>
+			</div>
+		</form>
 	)
 }
 

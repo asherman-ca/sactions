@@ -1,44 +1,19 @@
-import { prisma } from '@/prisma/Prisma'
-import { redirect } from 'next/navigation'
+import NewPostForm from '../components/NewPostForm'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { PostType } from '../util/types'
 
-const page = () => {
-	const handleSubmit = async (e: any) => {
-		'use server'
-		const { title, content } = Object.fromEntries(e)
-		const post = await prisma.post.create({
-			data: {
-				title: title,
-				content: content,
-			},
-		})
-		revalidatePath('/')
-		redirect(`/post/${post.id}`)
-	}
-
+const page = async () => {
 	return (
 		<div className='p-4'>
-			<form action={handleSubmit}>
-				<div>
-					<input
-						type='text'
-						className='w-full'
-						placeholder='Title'
-						name='title'
-						required
-					/>
-				</div>
-				<div>
-					<input
-						type='text'
-						className='w-full'
-						placeholder='Content'
-						name='content'
-						required
-					/>
-				</div>
-				<button type='submit'>Create post</button>
-			</form>
+			<h1 className='text-xl font-semibold'>Create Post</h1>
+			{/* @ts-ignore */}
+			<NewPostForm
+				aftersave={async (post: PostType) => {
+					'use server'
+					redirect(`/post/${post.id}`)
+				}}
+			/>
 		</div>
 	)
 }
